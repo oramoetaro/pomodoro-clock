@@ -7,7 +7,7 @@ const defaultState = {
     timerLabel: "Session Time",
     maxLength: 60,
     minLength: 1,
-    length: 1
+    length: 5
   },
   break: {
     ctrlLabel: "Break Length",
