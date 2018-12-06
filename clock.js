@@ -38,6 +38,7 @@ var Clock = function (_React$Component) {
   _createClass(Clock, [{
     key: "componentWillMount",
     value: function componentWillMount() {
+      this.turnedOn = false;
       this.mode = "session";
       this.state.mins = this.state[this.mode].length;
       this.state.secs = 5;
@@ -45,21 +46,53 @@ var Clock = function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      var task = this.state[this.mode];
+      var currentTask = this.state[this.mode];
       return React.createElement(
         "div",
         { id: "clock", className: "border rounded text-center" },
         React.createElement(Timer, {
           mins: ('0' + this.state.mins).slice(-2),
           secs: ('0' + this.state.secs).slice(-2),
-          label: task.timerLabel
-        })
+          label: currentTask.timerLabel
+        }),
+        React.createElement(
+          "div",
+          { id: "control-panel" },
+          React.createElement(ToggleCtrl, null)
+        )
       );
     }
   }]);
 
   return Clock;
 }(React.Component);
+
+function ToggleCtrl() {
+  return React.createElement(
+    "div",
+    { id: "toggle-control", className: "my-3" },
+    React.createElement(
+      "button",
+      { className: "btn btn-dark mx-1 px-4" },
+      React.createElement("i", { className: "fa fa-power-off mr-2" }),
+      React.createElement(
+        "span",
+        null,
+        "Start"
+      )
+    ),
+    React.createElement(
+      "button",
+      { className: "btn btn-dark mx-1 px-4" },
+      React.createElement("i", { className: "fa fa-sync-alt mr-2" }),
+      React.createElement(
+        "span",
+        null,
+        "Reset"
+      )
+    )
+  );
+}
 
 function Timer(props) {
   return React.createElement(

@@ -22,23 +22,42 @@ class Clock extends React.Component {
   }
 
   componentWillMount() {
+    this.turnedOn = false;
     this.mode = "session";
     this.state.mins = this.state[this.mode].length;
     this.state.secs = 5;
   }
 
   render() {
-    const task = this.state[this.mode];
+    const currentTask = this.state[this.mode];
     return(
       <div id="clock" className="border rounded text-center">
         <Timer
           mins = {('0'+this.state.mins).slice(-2)}
           secs = {('0'+this.state.secs).slice(-2)}
-          label = {task.timerLabel}
+          label = {currentTask.timerLabel}
         />
+        <div id="control-panel">
+          <ToggleCtrl />
+        </div>
       </div>
     );
   }
+}
+
+function ToggleCtrl() {
+  return(
+    <div id="toggle-control" className="my-3">
+      <button className="btn btn-dark mx-1 px-4">
+        <i className="fa fa-power-off mr-2"></i>
+        <span>Start</span>
+      </button>
+      <button className="btn btn-dark mx-1 px-4">
+        <i className="fa fa-sync-alt mr-2"></i>
+        <span>Reset</span>
+      </button>
+    </div>
+  );
 }
 
 function Timer(props) {
