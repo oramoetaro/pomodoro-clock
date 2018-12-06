@@ -1,4 +1,7 @@
 const defaultState = {
+  turnedOn: false,
+  mode: "session",
+  secs: 0,
   session: {
     ctrlLabel: "Session Length",
     timerLabel: "Session Time",
@@ -20,25 +23,33 @@ class Clock extends React.Component {
     super(props);
     this.state = defaultState;
     this.startPause = this.startPause.bind(this);
+    this.reset = this.reset.bind(this);
     this.tick = this.tick.bind(this);
   }
 
   componentWillMount() {
-    this.turnedOn = false;
-    this.mode = "session";
-    this.state.mins = this.state[this.mode].length;
-    this.state.secs = 0;
+    this.setMins();
   }
 
   componentDidUpdate() {
     if (this.state.secs == 0 && this.state.mins == 0) {
-      this.mode = this.mode == "session" ? "break" : "session";
+      this.state.mode = 
+      this.state.mode == "session" ? "break" : "session";
     }
   }
 
+  setMins() {
+    this.state.mins = this.state[this.state.mode].length;
+  }
+
+  reset() {
+    this.setState(defaultState);
+    this.setMins();
+  }
+
   startPause() {
-    this.turnedOn = !this.turnedOn;
-    if (this.turnedOn) {
+    this.state.turnedOn = !this.state.turnedOn;
+    if (this.state.turnedOn) {
       this.tick();
       this.interval = setInterval(this.tick, 1000);
     } else {
@@ -48,14 +59,14 @@ class Clock extends React.Component {
   }
 
   tick() {
-    obj = this.state;
+    let obj = this.state;
     obj.secs = obj.secs ? obj.secs - 1 : 59;
     obj.mins = obj.secs == 59 ? obj.mins -1 : obj.mins;
     this.setState(obj);
   }
 
   render() {
-    const currentTask = this.state[this.mode];
+    const currentTask = this.state[this.state.mode];
     return(
       <div id="clock" className="border rounded text-center">
         <Timer
@@ -66,6 +77,7 @@ class Clock extends React.Component {
         <div id="control-panel">
           <StartControls
             startPause = {this.startPause}
+            reset = {this.reset}
           />
         </div>
       </div>
@@ -82,7 +94,9 @@ function StartControls(props) {
         <i className="fa fa-power-off mr-2"></i>
         <span>Start</span>
       </button>
-      <button className="btn btn-dark mx-1 px-4">
+      <button className="btn btn-dark mx-1 px-4"
+      onClick={props.reset}
+      >
         <i className="fa fa-sync-alt mr-2"></i>
         <span>Reset</span>
       </button>

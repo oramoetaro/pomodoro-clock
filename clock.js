@@ -7,6 +7,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var defaultState = {
+  turnedOn: false,
+  mode: "session",
+  secs: 0,
   session: {
     ctrlLabel: "Session Length",
     timerLabel: "Session Time",
@@ -33,6 +36,7 @@ var Clock = function (_React$Component) {
 
     _this.state = defaultState;
     _this.startPause = _this.startPause.bind(_this);
+    _this.reset = _this.reset.bind(_this);
     _this.tick = _this.tick.bind(_this);
     return _this;
   }
@@ -40,23 +44,31 @@ var Clock = function (_React$Component) {
   _createClass(Clock, [{
     key: "componentWillMount",
     value: function componentWillMount() {
-      this.turnedOn = false;
-      this.mode = "session";
-      this.state.mins = this.state[this.mode].length;
-      this.state.secs = 0;
+      this.setMins();
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate() {
       if (this.state.secs == 0 && this.state.mins == 0) {
-        this.mode = this.mode == "session" ? "break" : "session";
+        this.state.mode = this.state.mode == "session" ? "break" : "session";
       }
+    }
+  }, {
+    key: "setMins",
+    value: function setMins() {
+      this.state.mins = this.state[this.state.mode].length;
+    }
+  }, {
+    key: "reset",
+    value: function reset() {
+      this.setState(defaultState);
+      this.setMins();
     }
   }, {
     key: "startPause",
     value: function startPause() {
-      this.turnedOn = !this.turnedOn;
-      if (this.turnedOn) {
+      this.state.turnedOn = !this.state.turnedOn;
+      if (this.state.turnedOn) {
         this.tick();
         this.interval = setInterval(this.tick, 1000);
       } else {
@@ -67,7 +79,7 @@ var Clock = function (_React$Component) {
   }, {
     key: "tick",
     value: function tick() {
-      obj = this.state;
+      var obj = this.state;
       obj.secs = obj.secs ? obj.secs - 1 : 59;
       obj.mins = obj.secs == 59 ? obj.mins - 1 : obj.mins;
       this.setState(obj);
@@ -75,7 +87,7 @@ var Clock = function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      var currentTask = this.state[this.mode];
+      var currentTask = this.state[this.state.mode];
       return React.createElement(
         "div",
         { id: "clock", className: "border rounded text-center" },
@@ -88,7 +100,8 @@ var Clock = function (_React$Component) {
           "div",
           { id: "control-panel" },
           React.createElement(StartControls, {
-            startPause: this.startPause
+            startPause: this.startPause,
+            reset: this.reset
           })
         )
       );
@@ -116,7 +129,9 @@ function StartControls(props) {
     ),
     React.createElement(
       "button",
-      { className: "btn btn-dark mx-1 px-4" },
+      { className: "btn btn-dark mx-1 px-4",
+        onClick: props.reset
+      },
       React.createElement("i", { className: "fa fa-sync-alt mr-2" }),
       React.createElement(
         "span",
