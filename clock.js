@@ -62,6 +62,7 @@ var Clock = function (_React$Component) {
   }, {
     key: "reset",
     value: function reset() {
+      this.pause();
       this.setState(defaultState);
       this.setMins();
     }

@@ -44,6 +44,7 @@ class Clock extends React.Component {
   }
 
   reset() {
+    this.pause();
     this.setState(defaultState);
     this.setMins();
   }
