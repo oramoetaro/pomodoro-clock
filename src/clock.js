@@ -19,6 +19,8 @@ class Clock extends React.Component {
   constructor(props) {
     super(props);
     this.state = defaultState;
+    this.startPause = this.startPause.bind(this);
+    this.tick = this.tick.bind(this);
   }
 
   componentWillMount() {
@@ -26,6 +28,22 @@ class Clock extends React.Component {
     this.mode = "session";
     this.state.mins = this.state[this.mode].length;
     this.state.secs = 5;
+  }
+
+  startPause() {
+    this.turnedOn = !this.turnedOn;
+    if (this.turnedOn) {
+      this.interval = setInterval(this.tick, 1000);
+    } else {
+      clearInterval(this.interval);
+      delete this.interval;
+    }
+  }
+
+  tick() {
+    obj = this.state;
+    obj.secs = obj.secs ? obj.secs - 1 : 59;
+    this.setState(obj);
   }
 
   render() {
@@ -38,17 +56,21 @@ class Clock extends React.Component {
           label = {currentTask.timerLabel}
         />
         <div id="control-panel">
-          <ToggleCtrl />
+          <StartControls
+            startPause = {this.startPause}
+          />
         </div>
       </div>
     );
   }
 }
 
-function ToggleCtrl() {
+function StartControls(props) {
   return(
     <div id="toggle-control" className="my-3">
-      <button className="btn btn-dark mx-1 px-4">
+      <button className="btn btn-dark mx-1 px-4"
+      onClick={props.startPause}
+      >
         <i className="fa fa-power-off mr-2"></i>
         <span>Start</span>
       </button>

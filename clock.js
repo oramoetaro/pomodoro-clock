@@ -32,6 +32,8 @@ var Clock = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (Clock.__proto__ || Object.getPrototypeOf(Clock)).call(this, props));
 
     _this.state = defaultState;
+    _this.startPause = _this.startPause.bind(_this);
+    _this.tick = _this.tick.bind(_this);
     return _this;
   }
 
@@ -42,6 +44,24 @@ var Clock = function (_React$Component) {
       this.mode = "session";
       this.state.mins = this.state[this.mode].length;
       this.state.secs = 5;
+    }
+  }, {
+    key: "startPause",
+    value: function startPause() {
+      this.turnedOn = !this.turnedOn;
+      if (this.turnedOn) {
+        this.interval = setInterval(this.tick, 1000);
+      } else {
+        clearInterval(this.interval);
+        delete this.interval;
+      }
+    }
+  }, {
+    key: "tick",
+    value: function tick() {
+      obj = this.state;
+      obj.secs = obj.secs ? obj.secs - 1 : 59;
+      this.setState(obj);
     }
   }, {
     key: "render",
@@ -58,7 +78,9 @@ var Clock = function (_React$Component) {
         React.createElement(
           "div",
           { id: "control-panel" },
-          React.createElement(ToggleCtrl, null)
+          React.createElement(StartControls, {
+            startPause: this.startPause
+          })
         )
       );
     }
@@ -67,13 +89,15 @@ var Clock = function (_React$Component) {
   return Clock;
 }(React.Component);
 
-function ToggleCtrl() {
+function StartControls(props) {
   return React.createElement(
     "div",
     { id: "toggle-control", className: "my-3" },
     React.createElement(
       "button",
-      { className: "btn btn-dark mx-1 px-4" },
+      { className: "btn btn-dark mx-1 px-4",
+        onClick: props.startPause
+      },
       React.createElement("i", { className: "fa fa-power-off mr-2" }),
       React.createElement(
         "span",
