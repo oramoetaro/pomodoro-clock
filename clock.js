@@ -12,7 +12,7 @@ var defaultState = {
     timerLabel: "Session Time",
     maxLength: 60,
     minLength: 1,
-    length: 25
+    length: 1
   },
   break: {
     ctrlLabel: "Break Length",
@@ -46,10 +46,18 @@ var Clock = function (_React$Component) {
       this.state.secs = 5;
     }
   }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate() {
+      if (this.state.secs == 0 && this.state.mins == 0) {
+        this.mode = this.mode == "session" ? "break" : "session";
+      }
+    }
+  }, {
     key: "startPause",
     value: function startPause() {
       this.turnedOn = !this.turnedOn;
       if (this.turnedOn) {
+        this.setState({ secs: this.state.secs - 1 });
         this.interval = setInterval(this.tick, 1000);
       } else {
         clearInterval(this.interval);
@@ -61,6 +69,7 @@ var Clock = function (_React$Component) {
     value: function tick() {
       obj = this.state;
       obj.secs = obj.secs ? obj.secs - 1 : 59;
+      obj.mins = obj.secs == 59 ? obj.mins - 1 : obj.mins;
       this.setState(obj);
     }
   }, {
