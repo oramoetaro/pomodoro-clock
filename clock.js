@@ -15,14 +15,14 @@ var defaultState = {
     timerLabel: "Session Time",
     maxLength: 60,
     minLength: 1,
-    length: 1
+    length: 25
   },
   break: {
     ctrlLabel: "Break Length",
     timerLabel: "Break Time",
     maxLength: 60,
     minLength: 1,
-    length: 1
+    length: 5
   }
 };
 
@@ -99,6 +99,8 @@ var Clock = function (_React$Component) {
         React.createElement(
           "div",
           { id: "control-panel" },
+          React.createElement(Adjuster, this.state.session),
+          React.createElement(Adjuster, this.state.break),
           React.createElement(StartControls, {
             startPause: this.state.turnedOn ? this.pause : this.start,
             reset: this.reset
@@ -110,6 +112,41 @@ var Clock = function (_React$Component) {
 
   return Clock;
 }(React.Component);
+
+function Adjuster(props) {
+  return React.createElement(
+    "div",
+    { id: "adjuster", className: "my-3" },
+    React.createElement(
+      "div",
+      { className: "display-4 d-flex justify-content-center" },
+      React.createElement(
+        "div",
+        { className: "text-right" },
+        React.createElement("i", { className: "fa fa-caret-left" })
+      ),
+      React.createElement(
+        "div",
+        { className: "mx-3" },
+        React.createElement(
+          "span",
+          null,
+          ('0' + props.length).slice(-2)
+        )
+      ),
+      React.createElement(
+        "div",
+        { className: "text-left" },
+        React.createElement("i", { className: "fa fa-caret-right" })
+      )
+    ),
+    React.createElement(
+      "div",
+      null,
+      props.ctrlLabel
+    )
+  );
+}
 
 function StartControls(props) {
   return React.createElement(

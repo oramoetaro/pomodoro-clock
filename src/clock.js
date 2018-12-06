@@ -7,14 +7,14 @@ const defaultState = {
     timerLabel: "Session Time",
     maxLength: 60,
     minLength: 1,
-    length: 1
+    length: 25
   },
   break: {
     ctrlLabel: "Break Length",
     timerLabel: "Break Time",
     maxLength: 60,
     minLength: 1,
-    length: 1
+    length: 5
   }
 }
 
@@ -75,6 +75,12 @@ class Clock extends React.Component {
           label = {currentTask.timerLabel}
         />
         <div id="control-panel">
+          <Adjuster
+            {...this.state.session}
+          />
+          <Adjuster
+            {...this.state.break}
+          />
           <StartControls
             startPause = {this.state.turnedOn ? this.pause : this.start}
             reset = {this.reset}
@@ -83,6 +89,25 @@ class Clock extends React.Component {
       </div>
     );
   }
+}
+
+function Adjuster(props) {
+  return(
+    <div id="adjuster" className="my-3">
+      <div className="display-4 d-flex justify-content-center">
+        <div className="text-right">
+          <i className="fa fa-caret-left"></i>
+        </div>
+        <div className="mx-3">
+          <span>{('0'+props.length).slice(-2)}</span>
+        </div>
+        <div className="text-left">
+          <i className="fa fa-caret-right"></i>
+        </div>
+      </div>
+      <div>{props.ctrlLabel}</div>
+    </div>
+  );
 }
 
 function StartControls(props) {
