@@ -43,7 +43,7 @@ var Clock = function (_React$Component) {
       this.turnedOn = false;
       this.mode = "session";
       this.state.mins = this.state[this.mode].length;
-      this.state.secs = 5;
+      this.state.secs = 0;
     }
   }, {
     key: "componentDidUpdate",
@@ -57,7 +57,7 @@ var Clock = function (_React$Component) {
     value: function startPause() {
       this.turnedOn = !this.turnedOn;
       if (this.turnedOn) {
-        this.setState({ secs: this.state.secs - 1 });
+        this.tick();
         this.interval = setInterval(this.tick, 1000);
       } else {
         clearInterval(this.interval);
