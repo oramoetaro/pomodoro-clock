@@ -22,7 +22,8 @@ class Clock extends React.Component {
   constructor(props) {
     super(props);
     this.state = defaultState;
-    this.startPause = this.startPause.bind(this);
+    this.start = this.start.bind(this);
+    this.pause = this.pause.bind(this);
     this.reset = this.reset.bind(this);
     this.tick = this.tick.bind(this);
   }
@@ -47,15 +48,16 @@ class Clock extends React.Component {
     this.setMins();
   }
 
-  startPause() {
-    this.state.turnedOn = !this.state.turnedOn;
-    if (this.state.turnedOn) {
-      this.tick();
-      this.interval = setInterval(this.tick, 1000);
-    } else {
-      clearInterval(this.interval);
-      delete this.interval;
-    }
+  start() {
+    this.tick();
+    this.setState({turnedOn: !this.state.turnedOn});
+    this.interval = setInterval(this.tick, 1000);
+  }
+
+  pause() {
+    this.setState({turnedOn: !this.state.turnedOn});
+    clearInterval(this.interval);
+    delete this.interval;
   }
 
   tick() {
@@ -76,7 +78,7 @@ class Clock extends React.Component {
         />
         <div id="control-panel">
           <StartControls
-            startPause = {this.startPause}
+            startPause = {this.state.turnedOn ? this.pause : this.start}
             reset = {this.reset}
           />
         </div>

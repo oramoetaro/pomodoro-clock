@@ -35,7 +35,8 @@ var Clock = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (Clock.__proto__ || Object.getPrototypeOf(Clock)).call(this, props));
 
     _this.state = defaultState;
-    _this.startPause = _this.startPause.bind(_this);
+    _this.start = _this.start.bind(_this);
+    _this.pause = _this.pause.bind(_this);
     _this.reset = _this.reset.bind(_this);
     _this.tick = _this.tick.bind(_this);
     return _this;
@@ -65,16 +66,18 @@ var Clock = function (_React$Component) {
       this.setMins();
     }
   }, {
-    key: "startPause",
-    value: function startPause() {
-      this.state.turnedOn = !this.state.turnedOn;
-      if (this.state.turnedOn) {
-        this.tick();
-        this.interval = setInterval(this.tick, 1000);
-      } else {
-        clearInterval(this.interval);
-        delete this.interval;
-      }
+    key: "start",
+    value: function start() {
+      this.tick();
+      this.setState({ turnedOn: !this.state.turnedOn });
+      this.interval = setInterval(this.tick, 1000);
+    }
+  }, {
+    key: "pause",
+    value: function pause() {
+      this.setState({ turnedOn: !this.state.turnedOn });
+      clearInterval(this.interval);
+      delete this.interval;
     }
   }, {
     key: "tick",
@@ -100,7 +103,7 @@ var Clock = function (_React$Component) {
           "div",
           { id: "control-panel" },
           React.createElement(StartControls, {
-            startPause: this.startPause,
+            startPause: this.state.turnedOn ? this.pause : this.start,
             reset: this.reset
           })
         )
