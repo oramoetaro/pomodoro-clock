@@ -1,20 +1,20 @@
 const defaultState = {
   turnedOn: false,
   mode: "session",
-  secs: 0,
+  secs: 3,
   session: {
     ctrlLabel: "Session Length",
     timerLabel: "Session Time",
     maxLength: 60,
     minLength: 1,
-    length: 5
+    length: 1
   },
   break: {
     ctrlLabel: "Break Length",
     timerLabel: "Break Time",
     maxLength: 60,
     minLength: 1,
-    length: 5
+    length: 1
   }
 }
 
@@ -29,24 +29,21 @@ class Clock extends React.Component {
   }
 
   componentWillMount() {
-    this.setMins();
+    this.state.mins = this.state[this.state.mode].length;
   }
 
   componentDidUpdate() {
     if (this.state.secs == 0 && this.state.mins == 0) {
       this.state.mode = 
       this.state.mode == "session" ? "break" : "session";
+      this.state.mins = this.state[this.state.mode].length;
     }
-  }
-
-  setMins() {
-    this.state.mins = this.state[this.state.mode].length;
   }
 
   reset() {
     this.pause();
     this.setState(defaultState);
-    this.setMins();
+    this.state.mins = this.state[this.state.mode].length;
   }
 
   start() {
