@@ -4,14 +4,14 @@ const defaultState = {
   secs: 3,
   session: {
     ctrlLabel: "Session Length",
-    timerLabel: "Session Time",
+    timerLabel: "session",
     maxLength: 60,
     minLength: 1,
     length: 25
   },
   break: {
     ctrlLabel: "Break Length",
-    timerLabel: "Break Time",
+    timerLabel: "break",
     maxLength: 60,
     minLength: 1,
     length: 5
@@ -22,6 +22,8 @@ class Clock extends React.Component {
   constructor(props) {
     super(props);
     this.state = defaultState;
+    this.increase = this.increase.bind(this);
+    this.decrease = this.decrease.bind(this);
     this.start = this.start.bind(this);
     this.pause = this.pause.bind(this);
     this.reset = this.reset.bind(this);
@@ -36,6 +38,26 @@ class Clock extends React.Component {
     if (this.state.secs == 0 && this.state.mins == 0) {
       this.state.mode = 
       this.state.mode == "session" ? "break" : "session";
+      this.state.mins = this.state[this.state.mode].length;
+    }
+  }
+
+  decrease(task) {
+    const obj = this.state[task];
+    const condition = obj.length > obj.minLength;
+    if (!this.state.turnedOn && condition) {
+      obj.length -= 1;
+      this.setState({[task]: obj});
+      this.state.mins = this.state[this.state.mode].length;
+    }
+  }
+
+  increase(task) {
+    const obj = this.state[task];
+    const condition = obj.length < obj.maxLength;
+    if (!this.state.turnedOn && condition) {
+      obj.length += 1;
+      this.setState({[task]: obj});
       this.state.mins = this.state[this.state.mode].length;
     }
   }
@@ -77,9 +99,13 @@ class Clock extends React.Component {
         <div id="control-panel">
           <Adjuster
             {...this.state.session}
+            increase = {this.increase}
+            decrease = {this.decrease}
           />
           <Adjuster
             {...this.state.break}
+            increase = {this.increase}
+            decrease = {this.decrease}
           />
           <StartControls
             startPause = {this.state.turnedOn ? this.pause : this.start}
@@ -95,14 +121,16 @@ function Adjuster(props) {
   return(
     <div id="adjuster" className="my-3">
       <div className="display-4 d-flex justify-content-center">
-        <div className="text-right">
-          <i className="fa fa-caret-left"></i>
+        <div className="text-right"
+          onClick = {() => props.decrease(props.timerLabel)} >
+          <i className="fa fa-caret-left" />
         </div>
         <div className="mx-3">
           <span>{('0'+props.length).slice(-2)}</span>
         </div>
-        <div className="text-left">
-          <i className="fa fa-caret-right"></i>
+        <div className="text-left"
+          onClick = {() => props.increase(props.timerLabel)} >
+          <i className="fa fa-caret-right" />
         </div>
       </div>
       <div>{props.ctrlLabel}</div>

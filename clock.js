@@ -1,5 +1,7 @@
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -12,14 +14,14 @@ var defaultState = {
   secs: 3,
   session: {
     ctrlLabel: "Session Length",
-    timerLabel: "Session Time",
+    timerLabel: "session",
     maxLength: 60,
     minLength: 1,
     length: 25
   },
   break: {
     ctrlLabel: "Break Length",
-    timerLabel: "Break Time",
+    timerLabel: "break",
     maxLength: 60,
     minLength: 1,
     length: 5
@@ -35,6 +37,8 @@ var Clock = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (Clock.__proto__ || Object.getPrototypeOf(Clock)).call(this, props));
 
     _this.state = defaultState;
+    _this.increase = _this.increase.bind(_this);
+    _this.decrease = _this.decrease.bind(_this);
     _this.start = _this.start.bind(_this);
     _this.pause = _this.pause.bind(_this);
     _this.reset = _this.reset.bind(_this);
@@ -52,6 +56,28 @@ var Clock = function (_React$Component) {
     value: function componentDidUpdate() {
       if (this.state.secs == 0 && this.state.mins == 0) {
         this.state.mode = this.state.mode == "session" ? "break" : "session";
+        this.state.mins = this.state[this.state.mode].length;
+      }
+    }
+  }, {
+    key: "decrease",
+    value: function decrease(task) {
+      var obj = this.state[task];
+      var condition = obj.length > obj.minLength;
+      if (!this.state.turnedOn && condition) {
+        obj.length -= 1;
+        this.setState(_defineProperty({}, task, obj));
+        this.state.mins = this.state[this.state.mode].length;
+      }
+    }
+  }, {
+    key: "increase",
+    value: function increase(task) {
+      var obj = this.state[task];
+      var condition = obj.length < obj.maxLength;
+      if (!this.state.turnedOn && condition) {
+        obj.length += 1;
+        this.setState(_defineProperty({}, task, obj));
         this.state.mins = this.state[this.state.mode].length;
       }
     }
@@ -99,8 +125,14 @@ var Clock = function (_React$Component) {
         React.createElement(
           "div",
           { id: "control-panel" },
-          React.createElement(Adjuster, this.state.session),
-          React.createElement(Adjuster, this.state.break),
+          React.createElement(Adjuster, Object.assign({}, this.state.session, {
+            increase: this.increase,
+            decrease: this.decrease
+          })),
+          React.createElement(Adjuster, Object.assign({}, this.state.break, {
+            increase: this.increase,
+            decrease: this.decrease
+          })),
           React.createElement(StartControls, {
             startPause: this.state.turnedOn ? this.pause : this.start,
             reset: this.reset
@@ -122,7 +154,10 @@ function Adjuster(props) {
       { className: "display-4 d-flex justify-content-center" },
       React.createElement(
         "div",
-        { className: "text-right" },
+        { className: "text-right",
+          onClick: function onClick() {
+            return props.decrease(props.timerLabel);
+          } },
         React.createElement("i", { className: "fa fa-caret-left" })
       ),
       React.createElement(
@@ -136,7 +171,10 @@ function Adjuster(props) {
       ),
       React.createElement(
         "div",
-        { className: "text-left" },
+        { className: "text-left",
+          onClick: function onClick() {
+            return props.increase(props.timerLabel);
+          } },
         React.createElement("i", { className: "fa fa-caret-right" })
       )
     ),
