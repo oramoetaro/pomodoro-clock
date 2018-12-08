@@ -1,6 +1,7 @@
-const defaultState = {
+const state = {
   turnedOn: false,
   mode: "session",
+  mins: 0,
   secs: 3,
   session: {
     ctrlLabel: "Session Length",
@@ -21,7 +22,7 @@ const defaultState = {
 class Clock extends React.Component {
   constructor(props) {
     super(props);
-    this.state = defaultState;
+    this.state = {...state};
     this.increase = this.increase.bind(this);
     this.decrease = this.decrease.bind(this);
     this.start = this.start.bind(this);
@@ -43,7 +44,7 @@ class Clock extends React.Component {
   }
 
   decrease(task) {
-    const obj = this.state[task];
+    const obj = {...this.state[task]};
     const condition = obj.length > obj.minLength;
     if (!this.state.turnedOn && condition) {
       obj.length -= 1;
@@ -53,7 +54,7 @@ class Clock extends React.Component {
   }
 
   increase(task) {
-    const obj = this.state[task];
+    const obj = {...this.state[task]};
     const condition = obj.length < obj.maxLength;
     if (!this.state.turnedOn && condition) {
       obj.length += 1;
@@ -63,8 +64,8 @@ class Clock extends React.Component {
   }
 
   reset() {
-    this.pause();
-    this.setState(defaultState);
+    if (this.state.turnedOn) {this.pause();}
+    this.setState(state);
     this.state.mins = this.state[this.state.mode].length;
   }
 
@@ -75,9 +76,9 @@ class Clock extends React.Component {
   }
 
   pause() {
-    this.setState({turnedOn: !this.state.turnedOn});
     clearInterval(this.interval);
     delete this.interval;
+    this.setState({turnedOn: !this.state.turnedOn});
   }
 
   tick() {
@@ -108,7 +109,9 @@ class Clock extends React.Component {
             decrease = {this.decrease}
           />
           <StartControls
-            startPause = {this.state.turnedOn ? this.pause : this.start}
+            startPause = {
+              this.state.turnedOn ? this.pause : this.start
+            }
             reset = {this.reset}
           />
         </div>

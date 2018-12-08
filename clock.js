@@ -8,9 +8,10 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var defaultState = {
+var state = {
   turnedOn: false,
   mode: "session",
+  mins: 0,
   secs: 3,
   session: {
     ctrlLabel: "Session Length",
@@ -36,7 +37,7 @@ var Clock = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Clock.__proto__ || Object.getPrototypeOf(Clock)).call(this, props));
 
-    _this.state = defaultState;
+    _this.state = Object.assign({}, state);
     _this.increase = _this.increase.bind(_this);
     _this.decrease = _this.decrease.bind(_this);
     _this.start = _this.start.bind(_this);
@@ -62,7 +63,7 @@ var Clock = function (_React$Component) {
   }, {
     key: "decrease",
     value: function decrease(task) {
-      var obj = this.state[task];
+      var obj = Object.assign({}, this.state[task]);
       var condition = obj.length > obj.minLength;
       if (!this.state.turnedOn && condition) {
         obj.length -= 1;
@@ -73,7 +74,7 @@ var Clock = function (_React$Component) {
   }, {
     key: "increase",
     value: function increase(task) {
-      var obj = this.state[task];
+      var obj = Object.assign({}, this.state[task]);
       var condition = obj.length < obj.maxLength;
       if (!this.state.turnedOn && condition) {
         obj.length += 1;
@@ -84,8 +85,10 @@ var Clock = function (_React$Component) {
   }, {
     key: "reset",
     value: function reset() {
-      this.pause();
-      this.setState(defaultState);
+      if (this.state.turnedOn) {
+        this.pause();
+      }
+      this.setState(state);
       this.state.mins = this.state[this.state.mode].length;
     }
   }, {
@@ -98,9 +101,9 @@ var Clock = function (_React$Component) {
   }, {
     key: "pause",
     value: function pause() {
-      this.setState({ turnedOn: !this.state.turnedOn });
       clearInterval(this.interval);
       delete this.interval;
+      this.setState({ turnedOn: !this.state.turnedOn });
     }
   }, {
     key: "tick",
