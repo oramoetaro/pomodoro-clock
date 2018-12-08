@@ -1,7 +1,5 @@
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -50,7 +48,9 @@ var Clock = function (_React$Component) {
   _createClass(Clock, [{
     key: "componentWillMount",
     value: function componentWillMount() {
-      this.state.mins = this.state[this.state.mode].length;
+      this.setState({
+        mins: this.state[this.state.mode].length
+      });
     }
   }, {
     key: "componentDidUpdate",
@@ -63,23 +63,29 @@ var Clock = function (_React$Component) {
   }, {
     key: "decrease",
     value: function decrease(task) {
-      var obj = Object.assign({}, this.state[task]);
-      var condition = obj.length > obj.minLength;
-      if (!this.state.turnedOn && condition) {
-        obj.length -= 1;
-        this.setState(_defineProperty({}, task, obj));
-        this.state.mins = this.state[this.state.mode].length;
+      var obj = JSON.parse(JSON.stringify(this.state));
+      var inRange = obj[task].length > obj[task].minLength;
+      obj[task].length = inRange ? obj[task].length -= 1 : obj[task].minLength;
+
+      if (obj.mode == task) {
+        obj.mins = obj[task].length;
+      }
+
+      if (!obj.turnedOn) {
+        this.setState(obj);
       }
     }
   }, {
     key: "increase",
     value: function increase(task) {
-      var obj = Object.assign({}, this.state[task]);
-      var condition = obj.length < obj.maxLength;
-      if (!this.state.turnedOn && condition) {
-        obj.length += 1;
-        this.setState(_defineProperty({}, task, obj));
-        this.state.mins = this.state[this.state.mode].length;
+      var obj = JSON.parse(JSON.stringify(this.state));
+      var inRange = obj[task].length < obj[task].maxLength;
+      obj[task].length = inRange ? obj[task].length += 1 : obj[task].maxLength;
+      if (obj.mode == task) {
+        obj.mins = obj[task].length;
+      }
+      if (!obj.turnedOn) {
+        this.setState(obj);
       }
     }
   }, {

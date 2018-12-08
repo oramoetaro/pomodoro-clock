@@ -32,7 +32,9 @@ class Clock extends React.Component {
   }
 
   componentWillMount() {
-    this.state.mins = this.state[this.state.mode].length;
+    this.setState({
+      mins: this.state[this.state.mode].length
+    });
   }
 
   componentDidUpdate() {
@@ -44,22 +46,32 @@ class Clock extends React.Component {
   }
 
   decrease(task) {
-    const obj = {...this.state[task]};
-    const condition = obj.length > obj.minLength;
-    if (!this.state.turnedOn && condition) {
-      obj.length -= 1;
-      this.setState({[task]: obj});
-      this.state.mins = this.state[this.state.mode].length;
+    let obj = JSON.parse(JSON.stringify(this.state));
+    const inRange = obj[task].length > obj[task].minLength;
+    obj[task].length = inRange ?
+    obj[task].length -=1:
+    obj[task].minLength;
+    
+    if (obj.mode == task) {
+      obj.mins = obj[task].length;
+    }
+
+    if (!obj.turnedOn) {
+      this.setState(obj);
     }
   }
 
   increase(task) {
-    const obj = {...this.state[task]};
-    const condition = obj.length < obj.maxLength;
-    if (!this.state.turnedOn && condition) {
-      obj.length += 1;
-      this.setState({[task]: obj});
-      this.state.mins = this.state[this.state.mode].length;
+    let obj = JSON.parse(JSON.stringify(this.state));
+    const inRange = obj[task].length < obj[task].maxLength;
+    obj[task].length = inRange ?
+    obj[task].length +=1:
+    obj[task].maxLength;
+    if (obj.mode == task) {
+      obj.mins = obj[task].length;
+    }
+    if (!obj.turnedOn) {
+      this.setState(obj);
     }
   }
 
