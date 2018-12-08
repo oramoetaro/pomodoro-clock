@@ -67,18 +67,21 @@ class Clock extends React.Component {
     obj[task].length = inRange ?
     obj[task].length +=1:
     obj[task].maxLength;
+
     if (obj.mode == task) {
       obj.mins = obj[task].length;
     }
+
     if (!obj.turnedOn) {
       this.setState(obj);
     }
   }
 
   reset() {
+    let obj = JSON.parse(JSON.stringify(state));
     if (this.state.turnedOn) {this.pause();}
-    this.setState(state);
-    this.state.mins = this.state[this.state.mode].length;
+    obj.mins = obj[obj.mode].length;
+    this.setState(obj);
   }
 
   start() {

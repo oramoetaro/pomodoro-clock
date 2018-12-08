@@ -81,9 +81,11 @@ var Clock = function (_React$Component) {
       var obj = JSON.parse(JSON.stringify(this.state));
       var inRange = obj[task].length < obj[task].maxLength;
       obj[task].length = inRange ? obj[task].length += 1 : obj[task].maxLength;
+
       if (obj.mode == task) {
         obj.mins = obj[task].length;
       }
+
       if (!obj.turnedOn) {
         this.setState(obj);
       }
@@ -91,11 +93,12 @@ var Clock = function (_React$Component) {
   }, {
     key: "reset",
     value: function reset() {
+      var obj = JSON.parse(JSON.stringify(state));
       if (this.state.turnedOn) {
         this.pause();
       }
-      this.setState(state);
-      this.state.mins = this.state[this.state.mode].length;
+      obj.mins = obj[obj.mode].length;
+      this.setState(obj);
     }
   }, {
     key: "start",
