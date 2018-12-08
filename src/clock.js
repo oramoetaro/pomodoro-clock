@@ -1,234 +1,191 @@
-function ControlPanel (props) {
-  return (
-    <div id="controls" className="col-lg-4">
-      <LengthCrl
-        {...props.session}
-        decrease={props.decrease}
-        increase={props.increase}
-      />
-      <LengthCrl
-        {...props.break}
-        decrease={props.decrease}
-        increase={props.increase}
-      />
-      <ResetBtn reset={props.reset} />
-      <StartBtn start={props.start} />
-    </div>
-  );
-}
-
-function LengthCrl (props) {
-  return (
-    <div className="length-control my-2">
-      <div className="display-4">
-        <Decrement
-          name={props.timerLabel}
-          decrease={props.decrease}
-        />
-        <Length
-          name={props.timerLabel}
-          length={props.length}
-        />
-        <Increment
-          name={props.timerLabel}
-          increase={props.increase}
-        />
-      </div>
-      <span className="h6">{props.ctrlLabel}</span>
-    </div>
-  );
-}
-
-function Length (props) {
-  return (
-    <span id={`${props.name}-length`} className="mx-2">
-      {('0' + props.length).slice(-2)}
-    </span>
-  );
-}
-
-function Decrement (props) {
-  return (
-    <span id={`${props.name}-decrement`} 
-    onClick={() => {props.decrease(props.name)}}>
-      <i className="fas fa-xs fa-angle-left"></i>
-    </span>
-  );
-}
-
-function Increment (props) {
-  return (
-    <span id={`${props.name}-increment`}
-    onClick={() => {props.increase(props.name)}}>
-      <i className="fas fa-xs fa-angle-right"></i>
-    </span>
-  );
-}
-
-function ResetBtn(props) {
-  return (
-    <div id="reset" className="float-right" onClick={props.reset}>
-      <i className="fas fa-sync-alt fa-lg"></i>
-    </div>
-  );
-}
-
-function StartBtn(props) {
-  return(
-    <div
-      id="start_stop"
-      className="float-right mr-3"
-      onClick={props.start}
-    >
-      <i className="fas fa-play fa-lg"></i>
-      <i className="fas fa-pause fa-lg"></i>
-    </div>
-  );
-}
-
-function Timer(props) {
-  return (
-    <div id="timer" className="col-lg-8 border-right">
-      <p id="time-left" className="display-1 m-0">
-        {('0'+props.minutes).slice(-2)}:
-        {('0'+props.seconds).slice(-2)}
-      </p>
-      <p id="timer-label">
-        {props.label}
-      </p>
-  </div>
-  );
-}
-
-const defaultState = {
-  break: {
-    ctrlLabel: "Break Length",
-    timerLabel: "break",
-    maxLength: 60,
-    minLength: 1,
-    length: 1
-  },
+const state = {
+  turnedOn: false,
+  mode: "session",
+  mins: 0,
+  secs: 3,
   session: {
     ctrlLabel: "Session Length",
     timerLabel: "session",
     maxLength: 60,
     minLength: 1,
-    length: 1
+    length: 25
   },
-  mode: "session",
-  turnedOn: false
-};
+  break: {
+    ctrlLabel: "Break Length",
+    timerLabel: "break",
+    maxLength: 60,
+    minLength: 1,
+    length: 5
+  }
+}
 
 class Clock extends React.Component {
   constructor(props) {
     super(props);
-    this.state = defaultState;
+    this.state = {...state};
+    this.increase = this.increase.bind(this);
+    this.decrease = this.decrease.bind(this);
+    this.start = this.start.bind(this);
+    this.pause = this.pause.bind(this);
+    this.reset = this.reset.bind(this);
+    this.tick = this.tick.bind(this);
   }
 
   componentWillMount() {
-    this.reset();
-  }
-  
-  componentDidMount() {
-    this.interval = setInterval(
-      () => this.tick(),
-      1000
-    );
-  }
-  
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
-  reset() {
-    this.setState(defaultState);
-    const mins = this.state.mode == "session" ?
-    this.state.session.length:
-    this.state.break.length;
-
     this.setState({
-      minutes: mins,
-      seconds: 0
+      mins: this.state[this.state.mode].length
     });
   }
 
-  decrease (name) {
-    const task = this.state[name];
-    if (task.length > task.minLength) {
-      task.length -= 1;
-      this.setState({
-        minutes: task.length,
-        [task]: task
-      });
+  componentDidUpdate() {
+    if (this.state.secs == 0 && this.state.mins == 0) {
+      this.state.mode = 
+      this.state.mode == "session" ? "break" : "session";
+      this.state.mins = this.state[this.state.mode].length;
     }
   }
 
-  increase (name) {
-    const task = this.state[name];
-    if (task.length < task.maxLength) {
-      task.length += 1;
-      this.setState({
-        minutes: task.length,
-        [task]: task
-      });
-    }
-  }
-
-  tick() {
-    let obj = {};
-
-    switch (this.state.seconds) {
-      case 0: {
-        obj.seconds = 59;
-        if (this.state.minutes) {
-          obj.minutes = this.state.minutes - 1;
-        } else {
-          obj.minutes = this.state.mode == "session" ?
-          this.state.break.length -1:
-          this.state.session.length -1;
-          obj.mode = this.state.mode == "session" ?
-          "break" : "session";
-        } break;
-      }
-      default: {
-        obj.seconds = this.state.seconds - 1;
-      }
+  decrease(task) {
+    let obj = JSON.parse(JSON.stringify(this.state));
+    const inRange = obj[task].length > obj[task].minLength;
+    obj[task].length = inRange ?
+    obj[task].length -=1:
+    obj[task].minLength;
+    
+    if (obj.mode == task) {
+      obj.mins = obj[task].length;
     }
 
-    if (this.state.turnedOn) {
+    if (!obj.turnedOn) {
       this.setState(obj);
     }
   }
 
+  increase(task) {
+    let obj = JSON.parse(JSON.stringify(this.state));
+    const inRange = obj[task].length < obj[task].maxLength;
+    obj[task].length = inRange ?
+    obj[task].length +=1:
+    obj[task].maxLength;
+
+    if (obj.mode == task) {
+      obj.mins = obj[task].length;
+    }
+
+    if (!obj.turnedOn) {
+      this.setState(obj);
+    }
+  }
+
+  reset() {
+    let obj = JSON.parse(JSON.stringify(state));
+    if (this.state.turnedOn) {this.pause();}
+    obj.mins = obj[obj.mode].length;
+    this.setState(obj);
+  }
+
   start() {
-    this.setState({
-      turnedOn: !this.state.turnedOn
-    });
+    this.tick();
+    this.setState({turnedOn: !this.state.turnedOn});
+    this.interval = setInterval(this.tick, 1000);
+  }
+
+  pause() {
+    clearInterval(this.interval);
+    delete this.interval;
+    this.setState({turnedOn: !this.state.turnedOn});
+  }
+
+  tick() {
+    let obj = this.state;
+    obj.secs = obj.secs ? obj.secs - 1 : 59;
+    obj.mins = obj.secs == 59 ? obj.mins -1 : obj.mins;
+    this.setState(obj);
   }
 
   render() {
-
-    this.activated = this.state.mode == "session" ?
-    this.state.session : this.state.break;
-
+    const currentTask = this.state[this.state.mode];
     return(
-      <div id="clock" className="row col-lg-4 mx-auto py-3 border rounded">
+      <div id="clock" className="border rounded text-center">
         <Timer
-          minutes={this.state.minutes}
-          seconds={this.state.seconds}
-          label={this.activated.timerLabel}
+          mins = {('0'+this.state.mins).slice(-2)}
+          secs = {('0'+this.state.secs).slice(-2)}
+          label = {currentTask.timerLabel}
         />
-        <ControlPanel
-          start={this.start.bind(this)}
-          reset={this.reset.bind(this)}
-          decrease={this.decrease.bind(this)}
-          increase={this.increase.bind(this)}
-          break={this.state.break}
-          session={this.state.session}
-        />
+        <div id="control-panel">
+          <Adjuster
+            {...this.state.session}
+            increase = {this.increase}
+            decrease = {this.decrease}
+          />
+          <Adjuster
+            {...this.state.break}
+            increase = {this.increase}
+            decrease = {this.decrease}
+          />
+          <StartControls
+            startPause = {
+              this.state.turnedOn ? this.pause : this.start
+            }
+            reset = {this.reset}
+          />
+        </div>
       </div>
     );
   }
+}
+
+function Adjuster(props) {
+  return(
+    <div id="adjuster" className="my-3">
+      <div className="display-4 d-flex justify-content-center">
+        <div className="text-right"
+          onClick = {() => props.decrease(props.timerLabel)} >
+          <i className="fa fa-caret-left" />
+        </div>
+        <div className="mx-3">
+          <span>{('0'+props.length).slice(-2)}</span>
+        </div>
+        <div className="text-left"
+          onClick = {() => props.increase(props.timerLabel)} >
+          <i className="fa fa-caret-right" />
+        </div>
+      </div>
+      <div>{props.ctrlLabel}</div>
+    </div>
+  );
+}
+
+function StartControls(props) {
+  return(
+    <div id="toggle-control" className="my-3">
+      <button className="btn btn-dark mx-1 px-4"
+      onClick={props.startPause}
+      >
+        <i className="fa fa-power-off mr-2"></i>
+        <span>Start</span>
+      </button>
+      <button className="btn btn-dark mx-1 px-4"
+      onClick={props.reset}
+      >
+        <i className="fa fa-sync-alt mr-2"></i>
+        <span>Reset</span>
+      </button>
+    </div>
+  );
+}
+
+function Timer(props) {
+  return(
+    <div id="timer">
+      <div className="display-2">
+        {props.mins}:{props.secs}
+      </div>
+      <span className="h4">
+        {props.label}
+      </span>
+    </div>
+  );
 }
 
 ReactDOM.render(
