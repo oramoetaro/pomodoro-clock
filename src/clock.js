@@ -112,13 +112,18 @@ class Clock extends React.Component {
   render() {
     const currentTask = this.state[this.state.mode];
     return(
-      <div id="clock" className="border rounded text-center">
+      <div id="clock"
+      className="row d-flex align-items-center px-0 col-sm-6 mx-auto py-3 border rounded text-center">
         <Timer
           mins = {('0'+this.state.mins).slice(-2)}
           secs = {('0'+this.state.secs).slice(-2)}
           label = {currentTask.timerLabel}
+          reset = {this.reset}
+          startPause = {
+            this.state.turnedOn ? this.pause : this.start
+          }
         />
-        <div id="control-panel">
+        <div id="control-panel" className="col-lg-4 py-2">
           <Adjuster
             {...this.state.session}
             increase = {this.increase}
@@ -128,12 +133,6 @@ class Clock extends React.Component {
             {...this.state.break}
             increase = {this.increase}
             decrease = {this.decrease}
-          />
-          <StartControls
-            startPause = {
-              this.state.turnedOn ? this.pause : this.start
-            }
-            reset = {this.reset}
           />
         </div>
         <audio id="beep">
@@ -196,7 +195,7 @@ function StartControls(props) {
 
 function Timer(props) {
   return(
-    <div id="timer">
+    <div id="timer" className="col-lg-8">
       <div id="time-left"
         className="display-2">
         {props.mins}:{props.secs}
@@ -204,6 +203,10 @@ function Timer(props) {
       <span id="timer-label" className="h4">
         {`${props.label} time`}
       </span>
+      <StartControls
+        startPause = {props.startPause}
+        reset = {props.reset}
+      />
     </div>
   );
 }

@@ -137,15 +137,18 @@ var Clock = function (_React$Component) {
       var currentTask = this.state[this.state.mode];
       return React.createElement(
         "div",
-        { id: "clock", className: "border rounded text-center" },
+        { id: "clock",
+          className: "row d-flex align-items-center px-0 col-sm-6 mx-auto py-3 border rounded text-center" },
         React.createElement(Timer, {
           mins: ('0' + this.state.mins).slice(-2),
           secs: ('0' + this.state.secs).slice(-2),
-          label: currentTask.timerLabel
+          label: currentTask.timerLabel,
+          reset: this.reset,
+          startPause: this.state.turnedOn ? this.pause : this.start
         }),
         React.createElement(
           "div",
-          { id: "control-panel" },
+          { id: "control-panel", className: "col-lg-4 py-2" },
           React.createElement(Adjuster, Object.assign({}, this.state.session, {
             increase: this.increase,
             decrease: this.decrease
@@ -153,11 +156,7 @@ var Clock = function (_React$Component) {
           React.createElement(Adjuster, Object.assign({}, this.state.break, {
             increase: this.increase,
             decrease: this.decrease
-          })),
-          React.createElement(StartControls, {
-            startPause: this.state.turnedOn ? this.pause : this.start,
-            reset: this.reset
-          })
+          }))
         ),
         React.createElement(
           "audio",
@@ -254,7 +253,7 @@ function StartControls(props) {
 function Timer(props) {
   return React.createElement(
     "div",
-    { id: "timer" },
+    { id: "timer", className: "col-lg-8" },
     React.createElement(
       "div",
       { id: "time-left",
@@ -267,7 +266,11 @@ function Timer(props) {
       "span",
       { id: "timer-label", className: "h4" },
       props.label + " time"
-    )
+    ),
+    React.createElement(StartControls, {
+      startPause: props.startPause,
+      reset: props.reset
+    })
   );
 }
 
