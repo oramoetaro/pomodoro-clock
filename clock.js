@@ -53,11 +53,17 @@ var Clock = function (_React$Component) {
       });
     }
   }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.beep = document.getElementById('beep');
+    }
+  }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate() {
       if (this.state.secs == 0 && this.state.mins == 0) {
         this.state.mode = this.state.mode == "session" ? "break" : "session";
         this.state.mins = this.state[this.state.mode].length;
+        this.beep.play();
       }
     }
   }, {
@@ -96,6 +102,9 @@ var Clock = function (_React$Component) {
       var obj = JSON.parse(JSON.stringify(state));
       if (this.state.turnedOn) {
         this.pause();
+      }
+      if (!this.beep.paused) {
+        this.beep.pause();this.beep.load();
       }
       obj.mins = obj[obj.mode].length;
       this.setState(obj);
@@ -149,6 +158,13 @@ var Clock = function (_React$Component) {
             startPause: this.state.turnedOn ? this.pause : this.start,
             reset: this.reset
           })
+        ),
+        React.createElement(
+          "audio",
+          { id: "beep" },
+          React.createElement("source", {
+            src: "https://www.jetclic.mx/assets/fcc/beep.mp3",
+            type: "audio/mpeg" })
         )
       );
     }

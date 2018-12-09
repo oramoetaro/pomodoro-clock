@@ -37,11 +37,16 @@ class Clock extends React.Component {
     });
   }
 
+  componentDidMount() {
+    this.beep = document.getElementById('beep');
+  }
+
   componentDidUpdate() {
     if (this.state.secs == 0 && this.state.mins == 0) {
       this.state.mode = 
       this.state.mode == "session" ? "break" : "session";
       this.state.mins = this.state[this.state.mode].length;
+      this.beep.play();
     }
   }
 
@@ -80,6 +85,7 @@ class Clock extends React.Component {
   reset() {
     let obj = JSON.parse(JSON.stringify(state));
     if (this.state.turnedOn) {this.pause();}
+    if (!this.beep.paused) {this.beep.pause(); this.beep.load();}
     obj.mins = obj[obj.mode].length;
     this.setState(obj);
   }
@@ -130,6 +136,11 @@ class Clock extends React.Component {
             reset = {this.reset}
           />
         </div>
+        <audio id="beep">
+          <source
+          src="https://www.jetclic.mx/assets/fcc/beep.mp3"
+          type="audio/mpeg"/>
+        </audio>
       </div>
     );
   }
