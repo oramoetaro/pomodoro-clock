@@ -2,7 +2,7 @@ const state = {
   turnedOn: false,
   mode: "session",
   mins: 0,
-  secs: 3,
+  secs: 0,
   session: {
     ctrlLabel: "Session Length",
     timerLabel: "session",
@@ -139,19 +139,23 @@ function Adjuster(props) {
   return(
     <div id="adjuster" className="my-3">
       <div className="display-4 d-flex justify-content-center">
-        <div className="text-right"
+        <div id={`${props.timerLabel}-decrement`}
+          className="text-right"
           onClick = {() => props.decrease(props.timerLabel)} >
           <i className="fa fa-caret-left" />
         </div>
         <div className="mx-3">
-          <span>{('0'+props.length).slice(-2)}</span>
+          <span id={`${props.timerLabel}-length`}>{('0'+props.length).slice(-2)}</span>
         </div>
-        <div className="text-left"
+        <div id={`${props.timerLabel}-increment`}
+          className="text-left"
           onClick = {() => props.increase(props.timerLabel)} >
           <i className="fa fa-caret-right" />
         </div>
       </div>
-      <div>{props.ctrlLabel}</div>
+      <div id={`${props.timerLabel}-label`}>
+        {props.ctrlLabel}
+      </div>
     </div>
   );
 }
@@ -159,13 +163,17 @@ function Adjuster(props) {
 function StartControls(props) {
   return(
     <div id="toggle-control" className="my-3">
-      <button className="btn btn-dark mx-1 px-4"
+      <button
+      id="start_stop"
+      className="btn btn-dark mx-1 px-4"
       onClick={props.startPause}
       >
         <i className="fa fa-power-off mr-2"></i>
         <span>Start</span>
       </button>
-      <button className="btn btn-dark mx-1 px-4"
+      <button
+      id="reset"
+      className="btn btn-dark mx-1 px-4"
       onClick={props.reset}
       >
         <i className="fa fa-sync-alt mr-2"></i>
@@ -178,11 +186,12 @@ function StartControls(props) {
 function Timer(props) {
   return(
     <div id="timer">
-      <div className="display-2">
+      <div id="time-left"
+        className="display-2">
         {props.mins}:{props.secs}
       </div>
-      <span className="h4">
-        {props.label}
+      <span id="timer-label" className="h4">
+        {`${props.label} time`}
       </span>
     </div>
   );

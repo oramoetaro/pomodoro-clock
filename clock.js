@@ -10,7 +10,7 @@ var state = {
   turnedOn: false,
   mode: "session",
   mins: 0,
-  secs: 3,
+  secs: 0,
   session: {
     ctrlLabel: "Session Length",
     timerLabel: "session",
@@ -166,7 +166,8 @@ function Adjuster(props) {
       { className: "display-4 d-flex justify-content-center" },
       React.createElement(
         "div",
-        { className: "text-right",
+        { id: props.timerLabel + "-decrement",
+          className: "text-right",
           onClick: function onClick() {
             return props.decrease(props.timerLabel);
           } },
@@ -177,13 +178,14 @@ function Adjuster(props) {
         { className: "mx-3" },
         React.createElement(
           "span",
-          null,
+          { id: props.timerLabel + "-length" },
           ('0' + props.length).slice(-2)
         )
       ),
       React.createElement(
         "div",
-        { className: "text-left",
+        { id: props.timerLabel + "-increment",
+          className: "text-left",
           onClick: function onClick() {
             return props.increase(props.timerLabel);
           } },
@@ -192,7 +194,7 @@ function Adjuster(props) {
     ),
     React.createElement(
       "div",
-      null,
+      { id: props.timerLabel + "-label" },
       props.ctrlLabel
     )
   );
@@ -204,7 +206,9 @@ function StartControls(props) {
     { id: "toggle-control", className: "my-3" },
     React.createElement(
       "button",
-      { className: "btn btn-dark mx-1 px-4",
+      {
+        id: "start_stop",
+        className: "btn btn-dark mx-1 px-4",
         onClick: props.startPause
       },
       React.createElement("i", { className: "fa fa-power-off mr-2" }),
@@ -216,7 +220,9 @@ function StartControls(props) {
     ),
     React.createElement(
       "button",
-      { className: "btn btn-dark mx-1 px-4",
+      {
+        id: "reset",
+        className: "btn btn-dark mx-1 px-4",
         onClick: props.reset
       },
       React.createElement("i", { className: "fa fa-sync-alt mr-2" }),
@@ -235,15 +241,16 @@ function Timer(props) {
     { id: "timer" },
     React.createElement(
       "div",
-      { className: "display-2" },
+      { id: "time-left",
+        className: "display-2" },
       props.mins,
       ":",
       props.secs
     ),
     React.createElement(
       "span",
-      { className: "h4" },
-      props.label
+      { id: "timer-label", className: "h4" },
+      props.label + " time"
     )
   );
 }
