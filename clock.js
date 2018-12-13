@@ -195,7 +195,7 @@ function Adjuster(props) {
         React.createElement(
           "span",
           { id: props.timerLabel + "-length" },
-          ('0' + props.length).slice(-2)
+          props.length
         )
       ),
       React.createElement(

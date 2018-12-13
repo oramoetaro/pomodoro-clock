@@ -156,7 +156,7 @@ function Adjuster(props) {
           <i className="fa fa-caret-left" />
         </div>
         <div className="mx-3">
-          <span id={`${props.timerLabel}-length`}>{('0'+props.length).slice(-2)}</span>
+          <span id={`${props.timerLabel}-length`}>{props.length}</span>
         </div>
         <div id={`${props.timerLabel}-increment`}
           className="text-left"
