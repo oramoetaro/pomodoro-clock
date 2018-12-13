@@ -47,6 +47,7 @@ class Clock extends React.Component {
       this.state.mode == "session" ? "break" : "session";
       this.state.mins = this.state[this.state.mode].length;
       this.beep.play();
+      this.state.secs = 1; // Added for fcc test
     }
   }
 
@@ -91,7 +92,7 @@ class Clock extends React.Component {
   }
 
   start() {
-    this.tick();
+    // this.tick(); //Commented for fcc test.
     this.setState({turnedOn: !this.state.turnedOn});
     this.interval = setInterval(this.tick, 1000);
   }

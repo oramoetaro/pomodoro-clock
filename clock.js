@@ -64,6 +64,7 @@ var Clock = function (_React$Component) {
         this.state.mode = this.state.mode == "session" ? "break" : "session";
         this.state.mins = this.state[this.state.mode].length;
         this.beep.play();
+        this.state.secs = 1; // Added for fcc test
       }
     }
   }, {
@@ -112,7 +113,7 @@ var Clock = function (_React$Component) {
   }, {
     key: "start",
     value: function start() {
-      this.tick();
+      // this.tick(); //Commented for fcc test.
       this.setState({ turnedOn: !this.state.turnedOn });
       this.interval = setInterval(this.tick, 1000);
     }
